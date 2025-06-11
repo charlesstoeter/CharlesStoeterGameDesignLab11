@@ -3,6 +3,8 @@
 Sprite::Sprite()
 {
 	image=NULL;
+	isJumping = false;
+
 }
 Sprite::~Sprite()
 {
@@ -10,6 +12,9 @@ Sprite::~Sprite()
 }
 void Sprite::InitSprites(int width, int height)
 {
+
+	isJumping = false;
+
 	x = 80;
 	y = 64;
 
