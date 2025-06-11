@@ -11,7 +11,7 @@ Sprite::~Sprite()
 void Sprite::InitSprites(int width, int height)
 {
 	x = 80;
-	y = -10;
+	y = 64;
 
 
 	maxFrame = 8;

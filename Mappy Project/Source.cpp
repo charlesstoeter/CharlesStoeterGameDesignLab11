@@ -17,10 +17,18 @@ int main(void)
 	//variables
 	bool done = false;
 	bool render = false;
+
+
+	double startTime = 0;
+	double endTime = 0;
+	bool levelComplete = false;
+
 	//Player Variable
 	Sprite player;
 	const int JUMPIT=1600;
 	int jump = JUMPIT;
+
+
 
 
 
@@ -57,6 +65,10 @@ int main(void)
 	al_register_event_source(event_queue, al_get_keyboard_event_source());
 
 	al_start_timer(timer);
+
+
+	startTime = al_get_time();
+
 	//draw the background tiles
 	MapDrawBG(xOff,yOff, 0, 0, WIDTH-1, HEIGHT-1);
 
@@ -71,6 +83,20 @@ int main(void)
 		al_wait_for_event(event_queue, &ev);
 		if(ev.type == ALLEGRO_EVENT_TIMER)
 		{
+
+
+			int playerMidX = player.getX() + player.getWidth() / 2;
+			int playerMidY = player.getY() + player.getHeight() / 2;
+			BLKSTR* tile = MapGetBlock(playerMidX / mapblockwidth, playerMidY / mapblockheight);
+
+			if (tile->user1 == 5) {
+				if (keys[UP]) player.setY(player.getY() - 2);
+				if (keys[DOWN]) player.setY(player.getY() + 2);
+			}
+
+
+			MapUpdateAnims(); // Animate blinking tiles
+
 			render = true;
 			if(keys[UP])
 				;
@@ -82,8 +108,15 @@ int main(void)
 				player.UpdateSprites(WIDTH,HEIGHT,1);
 			else
 				player.UpdateSprites(WIDTH,HEIGHT,2);
-			if (player.CollisionEndBlock())
-				cout<<"Hit an End Block\n";
+
+
+			if (!levelComplete && player.CollisionEndBlock()) {
+				levelComplete = true;
+				endTime = al_get_time();
+				cout << "LEVEL COMPLETE! Time: " << (endTime - startTime) << " seconds\n";
+			}
+
+
 			render = true;
 
 		}
@@ -165,6 +198,18 @@ int main(void)
 			MapDrawFG(xOff,yOff, 0, 0, WIDTH, HEIGHT, 0);
 			jump=player.jumping(jump,JUMPIT);
 			player.DrawSprites(xOff, yOff);
+
+
+			if (levelComplete) {
+				al_draw_textf(al_create_builtin_font(), al_map_rgb(255, 255, 0), WIDTH / 2 - 100, HEIGHT / 2, 0,
+					"LEVEL IS COMPLETED! Time: %.2f seconds", endTime - startTime);
+
+				if (al_get_time() - endTime > 10)
+					done = true;
+			}
+
+
+
 			al_flip_display();
 			al_clear_to_color(al_map_rgb(0,0,0));
 		}

@@ -22,6 +22,9 @@ public:
 	int jumping(int jump, const int JUMPIT);
 	bool CollisionEndBlock();
 
+	void setY(float newY) { y = newY; }
+
+
 private:
 	float x;
 	float y;
