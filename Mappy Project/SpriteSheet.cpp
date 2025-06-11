@@ -119,6 +119,11 @@ int Sprite::jumping(int jump, const int JUMPIT)
 			isJumping = true;
 		}
 
+
+		if (jump > 0 && collided(x + frameWidth / 2, y)) {
+			jump = -1; // Start descending immediately
+		}
+
 		y -= jump / 3;
 		jump--;
 
