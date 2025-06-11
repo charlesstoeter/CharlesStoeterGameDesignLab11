@@ -110,45 +110,40 @@ void Sprite::DrawSprites(int xoffset, int yoffset)
 
 int Sprite::jumping(int jump, const int JUMPIT)
 {
-	//handle jumping
-	if (jump==JUMPIT) { 
-		if (!collided(x + frameWidth/2, y + frameHeight + 5))
-			jump = 0; 
+	if (jump == JUMPIT) {
+		if (!collided(x + frameWidth / 2, y + frameHeight + 5))
+			jump = 0;
 	}
-	else
-	{
-		
-
-
+	else {
 		if (!isJumping) {
 			isJumping = true;
-			curFrame = 0;
 		}
 
 		y -= jump / 3;
 		jump--;
-		
 
-
-		if (++frameCount > frameDelay) {
-			frameCount = 0;
-			if (++curFrame > 3)  // only 4 frames for jumping (indices 0 to 3)
-				curFrame = 0;
+		// Frame assignment based on phase
+		if (jump == JUMPIT - 1) {
+			curFrame = 0; // crouch
 		}
-
-
+		else if (jump > 0) {
+			curFrame = 1; // ascending
+		}
+		else if (jump < 0) {
+			curFrame = 2; // descending
+		}
 	}
 
-	if (jump<0) 
-	{ 
-		if (collided(x + frameWidth/2,  y + frameHeight))
-		{ 
-			jump = JUMPIT; 
-			while (collided(x + frameWidth/2,y + frameHeight))
-			{
+	if (jump < 0) {
+		if (collided(x + frameWidth / 2, y + frameHeight)) {
+			jump = JUMPIT;
+
+			while (collided(x + frameWidth / 2, y + frameHeight)) {
 				y -= 3;
 			}
-		} 
+
+			curFrame = 3; // landing
+		}
 	}
 
 	if (jump == JUMPIT)
