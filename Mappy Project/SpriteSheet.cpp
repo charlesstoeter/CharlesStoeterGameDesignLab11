@@ -40,20 +40,20 @@ void Sprite::UpdateSprites(int width, int height, int dir)
 	if(dir == 1){ //right key
 		animationDirection = 1; 
 		x+=2; 
-		if (++frameCount > frameDelay)
+		if (!isJumping && ++frameCount > frameDelay)
 		{
-			frameCount=0;
+			frameCount = 0;
 			if (++curFrame > maxFrame)
-				curFrame=1;
+				curFrame = 1;
 		}
 	} else if (dir == 0){ //left key
 		animationDirection = 0; 
 		x-=2; 
-		if (++frameCount > frameDelay)
+		if (!isJumping && ++frameCount > frameDelay)
 		{
-			frameCount=0;
+			frameCount = 0;
 			if (++curFrame > maxFrame)
-				curFrame=1;
+				curFrame = 1;
 		}
 	}else //represent that they hit the space bar and that mean direction = 0
 		animationDirection = dir;
@@ -87,7 +87,16 @@ bool Sprite::CollisionEndBlock()
 void Sprite::DrawSprites(int xoffset, int yoffset)
 {
 	int fx = (curFrame % animationColumns) * frameWidth;
-	int fy = (curFrame / animationColumns) * frameHeight;
+	int fy;
+
+
+	if (isJumping) {
+		fy = frameHeight; // second row
+	}
+	else {
+		fy = 0; // first row
+	}
+
 
 	if (animationDirection==1){
 		al_draw_bitmap_region(image, fx, fy, frameWidth,frameHeight, x-xoffset, y-yoffset, 0);
@@ -108,9 +117,26 @@ int Sprite::jumping(int jump, const int JUMPIT)
 	}
 	else
 	{
-		y -= jump/3; 
-		jump--; 
-		curFrame=0;
+		
+
+
+		if (!isJumping) {
+			isJumping = true;
+			curFrame = 0;
+		}
+
+		y -= jump / 3;
+		jump--;
+		
+
+
+		if (++frameCount > frameDelay) {
+			frameCount = 0;
+			if (++curFrame > 3)  // only 4 frames for jumping (indices 0 to 3)
+				curFrame = 0;
+		}
+
+
 	}
 
 	if (jump<0) 
@@ -124,5 +150,9 @@ int Sprite::jumping(int jump, const int JUMPIT)
 			}
 		} 
 	}
+
+	if (jump == JUMPIT)
+		isJumping = false;
+
 	return jump;
 }
