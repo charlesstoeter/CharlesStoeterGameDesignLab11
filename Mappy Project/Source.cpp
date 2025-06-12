@@ -1,4 +1,4 @@
-#include <allegro5/allegro.h>
+﻿#include <allegro5/allegro.h>
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_primitives.h>
 #include "SpriteSheet.h"
@@ -126,6 +126,9 @@ int main(void)
 		}
 		else if(ev.type == ALLEGRO_EVENT_KEY_DOWN)
 		{
+
+
+
 			switch(ev.keyboard.keycode)
 			{
 			case ALLEGRO_KEY_ESCAPE:
@@ -145,7 +148,15 @@ int main(void)
 				break;
 			case ALLEGRO_KEY_SPACE:
 				keys[SPACE] = true;
-				jump=30;
+
+
+				int playerMidX = player.getX() + player.getWidth() / 2;
+				int playerMidY = player.getY() + player.getHeight() / 2;
+				BLKSTR* tile = MapGetBlock(playerMidX / mapblockwidth, playerMidY / mapblockheight);
+
+				if (tile->user1 != 5) // <-- NOT on a ladder
+					jump = 30;
+				break;
 
 			}
 		}
@@ -196,7 +207,18 @@ int main(void)
 
 			//draw foreground tiles
 			MapDrawFG(xOff,yOff, 0, 0, WIDTH, HEIGHT, 0);
-			jump=player.jumping(jump,JUMPIT);
+
+
+
+			int playerMidX = player.getX() + player.getWidth() / 2;
+			int playerMidY = player.getY() + player.getHeight() / 2;
+			BLKSTR* tile = MapGetBlock(playerMidX / mapblockwidth, playerMidY / mapblockheight);
+
+			if (tile->user1 != 5)  // Not on ladder → apply gravity
+				jump = player.jumping(jump, JUMPIT);
+
+
+
 			player.DrawSprites(xOff, yOff);
 
 
@@ -241,4 +263,5 @@ bool endValue( int x, int y )
 		return true;
 	}else
 		return false;
+
 }
